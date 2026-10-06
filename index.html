@@ -31,10 +31,19 @@
     .audio-qa{margin-top:18px;border-top:1px solid #e8ebf1;padding-top:16px}.audio-qa summary{cursor:pointer;font-weight:800;color:var(--blue)}.audio-qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:12px}.qa-item{border:1px solid #e1e5ee;border-radius:10px;padding:10px;font-size:14px}.qa-item button{margin-top:7px}
     @media(max-width:700px){.top-inner{align-items:flex-start;flex-direction:column}.namebox{width:100%}.namebox input{flex:1}.step-card{grid-template-columns:40px 1fr}.step-progress{grid-column:2;text-align:left}.options{grid-template-columns:1fr}.workspace{padding:16px}.key{min-width:29px;font-size:13px}.key.wide{min-width:90px}.step-title{font-size:16px}.exam-wrap{grid-template-columns:1fr}.exam-row{grid-template-columns:34px 1fr 78px}}
   </style>
+<style>.doctor-nav{background:#fff;border:1px solid #d8deea;border-radius:18px;padding:20px;margin-bottom:24px}.doctor-nav h2{margin:0 0 12px}.doctor-nav span{display:block;color:#6f7787;font-size:.85em;font-weight:400;margin-top:4px}.doctor-routes{display:grid;gap:10px;margin:18px 0}.doctor-route{display:block;text-decoration:none;color:#202938;border:1px solid #d8deea;border-radius:12px;padding:14px}.doctor-route[href]:hover{border-color:#315ba3;background:#f4f7ff}.doctor-route strong{font-size:18px}.doctor-route.unready{background:#f7f8fb;color:#747d8d}.doctor-nav summary{cursor:pointer;font-weight:700;padding:12px 0}.doctor-nav table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}.doctor-nav th,.doctor-nav td{text-align:left;padding:8px;border-bottom:1px solid #dedfe5}.doctor-nav button{border:1px solid #cbd3e2;border-radius:10px;background:#fff;padding:10px;color:#202938}.doctor-map-name{font-size:22px;font-weight:800}@media(max-width:600px){.doctor-nav{padding:14px}.doctor-nav table{font-size:12px}.doctor-nav th,.doctor-nav td{padding:6px 3px}}
+</style>
 </head>
 <body>
   <header class="top"><div class="top-inner"><div><div class="title">Тренажёр «У врача» · Маршрут 1</div><div class="subtitle">Слово и симптом · подготовка к экзаменационному заданию 6</div></div><label class="namebox">Имя <input id="studentName" placeholder="Введите имя" autocomplete="name"></label></div></header>
   <main>
+<section class="doctor-nav" aria-labelledby="doctorNavTitle">
+  <h2 id="doctorNavTitle">У врача · Пять учебных маршрутов<span>看病：五条学习路线</span></h2>
+  <p>Выберите лестницу. Ступени внутри неё открываются при результате от 70%.<span>请选择学习路线，达到70%后开放下一级。</span></p>
+  <div id="doctorRoutes" class="doctor-routes"></div>
+  <details id="doctorReadiness"><summary>Карта готовности к экзамену · 考试准备情况</summary><div id="doctorReadinessBody"></div><button type="button" id="doctorCopy">Копировать сводку · 复制摘要</button><p id="doctorCopyStatus" role="status"></p></details>
+</section>
+
     <div class="notice" id="notice">Введите имя и проходите ступени по порядку. Следующая ступень откроется после результата не ниже 70%. Имя и прогресс сохраняются в этом браузере.</div>
     <section id="ladder" class="ladder"></section>
     <section id="workspace" class="workspace"></section>
@@ -95,5 +104,28 @@
     function finishStep(){clearTimers();const pct=Math.round(state.score/15*100);state.results[state.step]={score:state.score,total:15,date:new Date().toISOString()};persist();renderLadder();const safeFile=esc((state.name||'Имя').replace(/\s+/g,'_'));const filename=state.step===9?`<div class="record-note">Имя файла для отправки: ${safeFile}_У_врача_Маршрут1_Объяснения_${new Date().toISOString().slice(0,10)}</div>`:'';$('#workspace').innerHTML=head(state.step,'результат')+`<div class="result"><div class="result-name">${esc(state.name||'Имя не указано')}</div><div class="score">${state.score}/15</div><div>${pct>=70?'Ступень пройдена':'Нужно не менее 11 правильных ответов'}</div><small>${new Date().toLocaleString('ru-RU')}</small>${filename}<button id="repeat" class="secondary">Повторить ступень</button></div>`;$('#repeat').onclick=()=>openStep(state.step)}
     renderLadder();renderDemo(1);
   </script>
+<script>/* Navigation only. Existing route 1 data, player and scoring remain unchanged. */
+(function(){
+  'use strict';
+  const routes=[['Слово и объяснение','词语与解释',10,'#ladder'],['Слышу то, что написано','听音辨字',8,'lestnica2.html'],['Диалог с пропусками','补全对话',8,null],['Перефразируй','选择同义句',8,null],['Слушаю и понимаю текст','听懂课文',8,null]];
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const read=n=>{try{return JSON.parse(localStorage.getItem(`doctor-route${n}-student-v1`)||'{}')}catch{return {}}};
+  const score=r=>r?`${r.score}/${r.total} · ${Math.round(r.score/r.total*100)}%`:'Не начато · 未开始';
+  function render(){
+    const data=routes.map((_,i)=>read(i+1));
+    const passed=routes.map((r,i)=>Object.values(data[i].results||{}).filter(v=>{const b=v.best||v;return b.total>0&&b.score/b.total>=.7}).length);
+    const bestFinal=routes.map((r,i)=>{const v=data[i].results?.[r[2]];return v?.best||v});
+    const lastFinal=routes.map((r,i)=>{const v=data[i].results?.[r[2]];return v?.last||v});
+    const name=document.getElementById('studentName').value.trim()||data[1].name||'Введите имя · 输入姓名';
+    const date=new Date().toLocaleString('ru-RU');
+    document.getElementById('doctorRoutes').innerHTML=routes.map((r,i)=>`<${r[3]?'a':'div'} class="doctor-route ${r[3]?'':'unready'}" ${r[3]?`href="${r[3]}"`:'aria-disabled="true"'}><strong>${i+1}. ${esc(r[0])}</strong><span>${r[1]} · ${r[2]} ступеней · ${passed[i]}/${r[2]} пройдено${i===4?' · Два итоговых формата':''}</span><span>${r[3]?(passed[i]?'Продолжить':'Начать')+' → · 开始 / 继续':'Ещё не добавлено · 暂未开放'}</span></${r[3]?'a':'div'}>`).join('');
+    const formats=[...routes.slice(0,4).map((r,i)=>[r[0],bestFinal[i],lastFinal[i]]),['Текст: выбор ответов',null,null],['Текст: короткие ответы',null,null]];
+    const ready=formats.filter(f=>f[1]?.total>0&&f[1].score/f[1].total>=.7).length;
+    document.getElementById('doctorReadinessBody').innerHTML=`<p class="doctor-map-name">${esc(name)}</p><p>${esc(date)} · ${ready}/6 итоговых форматов пройдено · 已通过</p><table><caption>Лестницы · 学习路线</caption><thead><tr><th>Маршрут</th><th>Ступени</th><th>Готовность</th><th>Лучший итог</th></tr></thead><tbody>${routes.map((r,i)=>`<tr><td>${esc(r[0])}</td><td>${passed[i]}/${r[2]}</td><td>${Math.round(passed[i]/r[2]*100)}%</td><td>${score(bestFinal[i])}</td></tr>`).join('')}</tbody></table><table><caption>Итоговые форматы · 综合训练</caption><thead><tr><th>Формат</th><th>Лучший</th><th>Последний</th></tr></thead><tbody>${formats.map(f=>`<tr><td>${esc(f[0])}</td><td>${score(f[1])}</td><td>${score(f[2])}</td></tr>`).join('')}</tbody></table><p>Сделайте скриншот и отправьте преподавателю. · 请截图并发送给老师。</p>`;
+    document.getElementById('doctorCopy').onclick=async()=>{const text=[`У врача — ${name}`,date,`Готовность: ${ready}/6`,...routes.map((r,i)=>`${r[0]}: ${passed[i]}/${r[2]} ступеней`),...formats.map(f=>`${f[0]} — лучший ${score(f[1])}; последний ${score(f[2])}`)].join('\n');try{await navigator.clipboard.writeText(text);document.getElementById('doctorCopyStatus').textContent='Скопировано · 已复制'}catch{document.getElementById('doctorCopyStatus').textContent='Копирование недоступно. Сделайте скриншот. · 无法复制，请截图。'}};
+  }
+  render();document.getElementById('studentName').addEventListener('input',render);window.addEventListener('pageshow',render);window.addEventListener('storage',render);document.getElementById('doctorReadiness').addEventListener('toggle',render);
+})();
+</script>
 </body>
 </html>
