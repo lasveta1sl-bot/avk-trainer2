@@ -32,7 +32,8 @@
     @media(max-width:700px){.top-inner{align-items:flex-start;flex-direction:column}.namebox{width:100%}.namebox input{flex:1}.step-card{grid-template-columns:40px 1fr}.step-progress{grid-column:2;text-align:left}.options{grid-template-columns:1fr}.workspace{padding:16px}.key{min-width:29px;font-size:13px}.key.wide{min-width:90px}.step-title{font-size:16px}.exam-wrap{grid-template-columns:1fr}.exam-row{grid-template-columns:34px 1fr 78px}}
   </style>
 <style>.doctor-nav{background:#fff;border:1px solid #d8deea;border-radius:20px;padding:28px;margin-bottom:24px}.doctor-nav h2{margin:0 0 12px;font-size:30px}.doctor-nav span{display:block;color:#6f7787;font-size:.85em;font-weight:400;margin-top:4px}.doctor-eyebrow{color:#315ba3;font-weight:700;font-size:14px}.doctor-routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:26px 0}.doctor-route{display:flex;flex-direction:column;text-decoration:none;color:#202938;border:1px solid #d8deea;border-radius:16px;padding:20px;box-shadow:0 3px 12px #23375b08}.doctor-route[href]{border-top:4px solid #315ba3}.doctor-route[href]:hover{border-color:#315ba3;background:#f4f7ff;transform:translateY(-2px)}.doctor-route strong{font-size:21px;margin:12px 0 4px}.doctor-route-number{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#eaf1ff;color:#315ba3;font-size:20px}.doctor-route p{font-size:15px;line-height:1.5;flex:1}.doctor-route .doctor-route-action{font-weight:700;color:#315ba3;margin-top:16px}.doctor-route-bar{height:6px;border-radius:5px;background:#e7e9ee;overflow:hidden}.doctor-route-bar i{display:block;height:100%;background:#1e8a55}.doctor-route.unready{background:#f7f8fb;color:#747d8d}.doctor-route.unready .doctor-route-action{color:#747d8d}.doctor-nav summary{cursor:pointer;font-weight:700;padding:16px 0;border-top:1px solid #e7e9ee}.doctor-nav table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}.doctor-nav th,.doctor-nav td{text-align:left;padding:8px;border-bottom:1px solid #dedfe5}.doctor-nav button{border:1px solid #cbd3e2;border-radius:10px;background:#fff;padding:10px;color:#202938}.doctor-map-name{font-size:22px;font-weight:800}.doctor-back{display:none;margin:0 0 20px}.doctor-back a{display:inline-block;color:#315ba3;text-decoration:none;font-weight:700;background:#fff;border:1px solid #d8deea;border-radius:10px;padding:12px 16px}.doctor-route1 .doctor-back{display:block}.doctor-route1 .doctor-nav{display:none}body:not(.doctor-route1) #notice,body:not(.doctor-route1) #ladder,body:not(.doctor-route1) #workspace{display:none!important}
-@media(max-width:850px){.doctor-routes{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.doctor-nav{padding:18px}.doctor-nav h2{font-size:26px}.doctor-routes{grid-template-columns:1fr}.doctor-nav table{font-size:12px}.doctor-nav th,.doctor-nav td{padding:6px 3px}}
+.doctor-hero{display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:24px;background:linear-gradient(110deg,#f6f9ff,#f5faf6);border-radius:18px;padding:24px 26px;margin:-8px -8px 22px}.doctor-hero h2{font-size:32px;line-height:1.2;max-width:550px}.doctor-hero-copy>p:last-child{line-height:1.5}.doctor-hero-art{width:100%;padding-top:12px}.doctor-hero-art svg{display:block;width:100%;height:auto;overflow:visible}.doctor-card-art{position:relative;min-height:105px;border-radius:12px;background:#f0f6f3;display:flex;justify-content:center;align-items:center;margin:-2px -2px 6px}.doctor-card-art svg{width:165px;height:96px}.doctor-card-art .doctor-route-number{position:absolute;top:10px;left:10px;width:28px;height:28px;font-size:15px;background:#fff;color:#315ba3}.route-art-2 .doctor-card-art{background:#eef3fb}.route-art-3 .doctor-card-art{background:#f1f0f7}.route-art-4 .doctor-card-art{background:#faf3e8}.route-art-5 .doctor-card-art{background:#eef6f2}.doctor-route.unready .doctor-card-art{opacity:.8}.doctor-route[href]:focus-visible{outline:3px solid #176bd4;outline-offset:3px}
+@media(max-width:850px){.doctor-routes{grid-template-columns:repeat(2,minmax(0,1fr))}.doctor-hero{gap:14px;padding:20px}.doctor-hero h2{font-size:28px}}@media(max-width:600px){.doctor-nav{padding:18px}.doctor-nav h2{font-size:26px}.doctor-hero{grid-template-columns:1fr;padding:20px;margin:-6px -6px 20px;gap:0}.doctor-hero-art{max-width:330px;margin:0 auto;padding-top:4px}.doctor-routes{grid-template-columns:1fr}.doctor-nav table{font-size:12px}.doctor-nav th,.doctor-nav td{padding:6px 3px}}
 </style>
 </head>
 <body>
@@ -40,9 +41,64 @@
   <main>
 <div class="doctor-back"><a href="#home">← Все маршруты · 全部学习路线</a><p id="doctorRouteLoading">Загружаются записи первой лестницы… · 正在加载第一条路线的录音…</p></div>
 <section class="doctor-nav" aria-labelledby="doctorNavTitle">
-  <p class="doctor-eyebrow">Аудирование и говорение · 听力与口语</p>
-  <h2 id="doctorNavTitle">Пять маршрутов к уверенному общению<span>看病：五条学习路线</span></h2>
-  <p>Выберите лестницу. Ступени внутри неё открываются при результате от 70%.<span>请选择学习路线，达到70%后开放下一级。</span></p>
+  <div class="doctor-hero"><div class="doctor-hero-copy">
+    <p class="doctor-eyebrow">Аудирование и говорение · 听力与口语</p>
+    <h2 id="doctorNavTitle">Пять маршрутов к уверенному общению<span>看病：五条学习路线</span></h2>
+    <p>Выберите лестницу. Ступени внутри неё открываются при результате от 70%.<span>请选择学习路线，达到70%后开放下一级。</span></p>
+  </div><div class="doctor-hero-art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -20 560 360" role="img" aria-labelledby="doctorArtTitle">
+  <title id="doctorArtTitle">Шаг за шагом к общению с врачом · 一步一步学会与医生交流</title>
+  <path d="M80 267C21 222 42 97 126 69c77-26 103 1 172-30 103-47 217 17 208 123-6 72-66 139-164 145-114 7-179 24-262-40Z" fill="#edf5f3"/>
+  <circle cx="459" cy="48" r="23" fill="#fff0d8"/>
+  <circle cx="51" cy="148" r="9" fill="#e5edfb"/>
+  <path d="M88 110h12m-6-6v12M493 226h14m-7-7v14" stroke="#8db9ac" stroke-width="3" stroke-linecap="round"/>
+  <!-- Five broad learning steps, not a ladder to climb with one's hands. -->
+  <path d="M60 305v-39h86v-34h86v-34h86v-34h86v-34h99v175Z" fill="#dce7f6"/>
+  <path d="M60 266h86v-34h86v-34h86v-34h86v-34h99" fill="none" stroke="#315ba3" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M85 285h40m51-34h38m48-34h38m48-34h38m49-34h38" stroke="#bdcfea" stroke-width="5" stroke-linecap="round"/>
+  <!-- Adult learner, carrying a notebook. -->
+  <g transform="translate(-50 10)">
+  <path d="M212 185l5 14 30 11-4 12-44-15-8-18ZM217 185l-28 31-2 28-14 1-3-35 23-38Z" fill="#315ba3"/>
+  <path d="m169 246 18-1 9 11h-26ZM242 220l12-5 14 7-23 9Z" fill="#23384e"/>
+  <path d="M182 181c-7-24-7-58 7-70l21-2c22 13 22 42 9 77Z" fill="#59a599"/>
+  <path d="m183 128-23 27 20 11m30-44 21 20 17-13" fill="none" stroke="#59a599" stroke-width="16" stroke-linecap="round"/>
+  <path d="m244 129 9-8" stroke="#e9bb94" stroke-width="9" stroke-linecap="round"/>
+  <rect x="235" y="105" width="28" height="34" rx="4" fill="#fff" stroke="#315ba3" stroke-width="2" transform="rotate(12 249 122)"/>
+  <path d="m243 113 12 3m-14 5 12 3" stroke="#a8bedb" stroke-width="2" stroke-linecap="round"/>
+  <path d="m192 106 2 10 13-1 1-11" fill="#e9bb94"/>
+  <ellipse cx="199" cy="88" rx="19" ry="24" fill="#f1c7a3"/>
+  <path d="M180 91c-9-25 5-36 22-32 17 3 21 16 16 29l-6-10c-13 1-21-2-27-7l1 20Z" fill="#243b51"/>
+  <circle cx="207" cy="87" r="2" fill="#243b51"/>
+  <path d="m206 97 6-1" stroke="#ac7159" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Physician at the top of the steps. -->
+  <g transform="translate(26 -10)">
+  <path d="M395 107v29h13l4-31m11 0 1 31h14v-30" fill="#315ba3"/>
+  <path d="M394 132h16l3 8h-24Zm29 0h15l8 8h-23Z" fill="#243b51"/>
+  <path d="M398 43c-13 7-18 29-18 65h67c-1-39-4-56-17-64Z" fill="#fff" stroke="#b8cbd5" stroke-width="2"/>
+  <path d="m405 43 10 15 9-15" fill="#59a599"/>
+  <path d="m407 42-5 14 10 4-7 13m19-31 6 14-10 4 6 13" fill="none" stroke="#c3d4de" stroke-width="2"/>
+  <path d="m394 56-20 20-16-14m76-6 12 20-13 13" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+  <path d="m359 62-6-5" stroke="#e9bb94" stroke-width="8" stroke-linecap="round"/>
+  <path d="M403 46v22c0 13 19 13 19 0V46" fill="none" stroke="#315ba3" stroke-width="3"/>
+  <path d="M422 68v17h8" fill="none" stroke="#315ba3" stroke-width="3"/>
+  <circle cx="433" cy="85" r="4" fill="#315ba3"/>
+  <rect x="439" y="75" width="24" height="32" rx="3" fill="#f9e5bd" stroke="#c89e67" stroke-width="2" transform="rotate(8 451 91)"/>
+  <path d="m445 85 11 2m-12 5 11 2" stroke="#c89e67" stroke-width="2" stroke-linecap="round"/>
+  <path d="M407 38v9h16v-10" fill="#e9bb94"/>
+  <ellipse cx="415" cy="23" rx="17" ry="21" fill="#f1c7a3"/>
+  <circle cx="429" cy="8" r="10" fill="#243b51"/>
+  <path d="M398 23c-7-24 26-34 35-15l-5 17-5-15c-5 8-12 9-21 8v10Z" fill="#243b51"/>
+  <circle cx="407" cy="24" r="1.8" fill="#243b51"/>
+  <path d="M408 33q6 4 10-1" fill="none" stroke="#ac7159" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- A conversation joins the learner and physician. -->
+  <path d="M295 24h48a12 12 0 0 1 12 12v22a12 12 0 0 1-12 12h-19l-15 13 1-13h-15a12 12 0 0 1-12-12V36a12 12 0 0 1 12-12Z" fill="#fff" stroke="#aac7bf" stroke-width="2"/>
+  <path d="m305 47 9 9 18-20" fill="none" stroke="#59a599" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="68" y="176" width="65" height="54" rx="14" fill="#fff" stroke="#e7d7bf" stroke-width="2"/>
+  <path d="M83 202h10l5-10 8 22 6-12h8" fill="none" stroke="#ce947f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 309h450" stroke="#cad6e4" stroke-width="3" stroke-linecap="round"/>
+</svg>
+</div></div>
   <div id="doctorRoutes" class="doctor-routes">
     <a class="doctor-route" href="#ladder"><strong>1. Слово и объяснение</strong><span>词语与解释 · 10 ступеней</span><span>Начать / Продолжить → · 开始 / 继续</span></a>
     <a class="doctor-route" href="lestnica2.html"><strong>2. Слышу то, что написано</strong><span>听音辨字 · 8 ступеней</span><span>Начать / Продолжить → · 开始 / 继续</span></a>
@@ -53,7 +109,16 @@
   <p id="doctorLoading">Сейчас доступны маршруты 1 и 2. Остальные появятся после подготовки и утверждения материалов.<span>目前开放路线1和2，其余路线将在教材审核后开放。</span></p>
   <details id="doctorReadiness"><summary>Карта готовности к экзамену · 考试准备情况</summary><div id="doctorReadinessBody"></div><button type="button" id="doctorCopy">Копировать сводку · 复制摘要</button><p id="doctorCopyStatus" role="status"></p></details>
 </section>
-<script>/* Navigation only. Existing route 1 data, player and scoring remain unchanged. */
+<script>/* Small original inline illustrations. Decorative: route names carry meaning. */
+const DOCTOR_ART = [
+  `<svg viewBox="0 0 180 100" aria-hidden="true"><ellipse cx="92" cy="87" rx="67" ry="8" fill="#dcebe6"/><rect x="98" y="27" width="54" height="54" rx="8" fill="#fff" stroke="#9ebeb2" stroke-width="2"/><path d="M109 38h30m-30 9h30m-30 9h20" stroke="#b6cec4" stroke-width="3" stroke-linecap="round"/><path d="M43 18v30c0 27 44 27 44 0V18" fill="none" stroke="#315ba3" stroke-width="5"/><path d="M65 70v9c0 12 36 11 36-6" fill="none" stroke="#315ba3" stroke-width="4"/><circle cx="104" cy="68" r="9" fill="#59a599" stroke="#315ba3" stroke-width="3"/><path d="M42 15h6m34 0h6" stroke="#243b51" stroke-width="7" stroke-linecap="round"/><path d="M127 70h11m-5-6v12" stroke="#59a599" stroke-width="3" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 180 100" aria-hidden="true"><ellipse cx="90" cy="87" rx="64" ry="8" fill="#dce7f6"/><path d="M48 58c-24-18-6-48 16-42 22 6 17 32 5 41-9 7-3 16-16 21-5 2-12-2-11-10" fill="#f2cfad" stroke="#c59e7d" stroke-width="2"/><path d="M49 40c-2-14 18-17 20-4 1 8-8 6-10 13" fill="none" stroke="#c59e7d" stroke-width="3" stroke-linecap="round"/><path d="M80 33q17 13 0 27m10-35q26 21 0 43" fill="none" stroke="#315ba3" stroke-width="3" stroke-linecap="round"/><rect x="112" y="26" width="43" height="52" rx="9" fill="#fff" stroke="#a7bddb" stroke-width="2"/><path d="m122 63 12-25 12 25m-20-8h16" fill="none" stroke="#315ba3" stroke-width="4" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 180 100" aria-hidden="true"><ellipse cx="90" cy="88" rx="68" ry="7" fill="#e6e7f0"/><path d="M27 80q0-27 22-27t24 27" fill="#59a599"/><circle cx="50" cy="38" r="16" fill="#f2cfad"/><path d="M35 36q-2-26 20-19 17 4 11 21l-5-14-25 6Z" fill="#243b51"/><path d="M111 81q0-28 22-28t23 28" fill="#fff" stroke="#b8cbd5" stroke-width="2"/><circle cx="133" cy="37" r="16" fill="#f2cfad"/><path d="M117 35q-1-25 22-19 16 7 9 23l-7-14-22 3Z" fill="#243b51"/><path d="M68 12h37q8 0 8 8v13q0 8-8 8H86l-10 9v-9h-8q-8 0-8-8V20q0-8 8-8Z" fill="#fff" stroke="#a7bddb" stroke-width="2"/><circle cx="74" cy="27" r="2.5" fill="#315ba3"/><circle cx="86" cy="27" r="2.5" fill="#315ba3"/><circle cx="98" cy="27" r="2.5" fill="#315ba3"/></svg>`,
+  `<svg viewBox="0 0 180 100" aria-hidden="true"><ellipse cx="90" cy="88" rx="66" ry="7" fill="#f0e5d5"/><path d="M27 20h58q8 0 8 8v23q0 8-8 8H56L43 71V59H27q-8 0-8-8V28q0-8 8-8Z" fill="#fff" stroke="#a7bddb" stroke-width="2"/><path d="M92 40h55q8 0 8 8v22q0 8-8 8h-21l-12 11V78H92q-8 0-8-8V48q0-8 8-8Z" fill="#fff" stroke="#b9cfc4" stroke-width="2"/><path d="M34 34h43m-43 10h29" stroke="#315ba3" stroke-width="3" stroke-linecap="round"/><path d="M99 53h41m-41 11h28" stroke="#59a599" stroke-width="3" stroke-linecap="round"/><path d="M105 17h29l-6-6m6 6-6 6M66 84H39l6-6m-6 6 6 6" fill="none" stroke="#c59b67" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 180 100" aria-hidden="true"><ellipse cx="91" cy="88" rx="66" ry="7" fill="#dcebe6"/><rect x="38" y="18" width="64" height="68" rx="7" fill="#fff" stroke="#a7bddb" stroke-width="2"/><rect x="57" y="12" width="26" height="13" rx="4" fill="#315ba3"/><path d="M51 38h37m-37 12h37m-37 12h25m-25 12h19" stroke="#b1c4dc" stroke-width="3" stroke-linecap="round"/><path d="M109 48q0-28 20-28t20 28" fill="none" stroke="#59a599" stroke-width="5"/><rect x="105" y="42" width="10" height="21" rx="5" fill="#315ba3"/><rect x="143" y="42" width="10" height="21" rx="5" fill="#315ba3"/><path d="M129 46v26m-9-21v15m19-15v15" stroke="#59a599" stroke-width="3" stroke-linecap="round"/></svg>`
+];
+
+/* Navigation only. Existing route 1 data, player and scoring remain unchanged. */
 (function(){
   'use strict';
   const routes=[['Слово и объяснение','词语与解释',10,'#ladder'],['Слышу то, что написано','听音辨字',8,'lestnica2.html'],['Диалог с пропусками','补全对话',8,null],['Перефразируй','选择同义句',8,null],['Слушаю и понимаю текст','听懂课文',8,null]];
@@ -76,7 +141,7 @@
     const name=document.getElementById('studentName').value.trim()||data[1].name||'Введите имя · 输入姓名';
     const date=new Date().toLocaleString('ru-RU');
     const descriptions=['Узнавайте симптомы, называйте и объясняйте слова.','Различайте звуки, ударение и написание.','Слушайте диалог и восстанавливайте пропущенное.','Понимайте смысл и выбирайте точный перефраз.','От коротких фрагментов — к пониманию целого текста.'];
-    document.getElementById('doctorRoutes').innerHTML=routes.map((r,i)=>`<${r[3]?'a':'div'} class="doctor-route ${r[3]?'':'unready'}" ${r[3]?`href="${r[3]}"`:'aria-disabled="true"'}><b class="doctor-route-number">${i+1}</b><strong>${esc(r[0])}</strong><span>${r[1]} · ${r[2]} ступеней${i===4?' · Два итоговых формата':''}</span><p>${descriptions[i]}</p>${r[3]?`<span class="doctor-route-bar"><i style="width:${Math.round(passed[i]/r[2]*100)}%"></i></span><span>${passed[i]}/${r[2]} ступеней пройдено · 已完成</span>`:''}<span class="doctor-route-action">${r[3]?(passed[i]?'Продолжить':'Начать')+' → · 开始 / 继续':'В подготовке · 准备中'}</span></${r[3]?'a':'div'}>`).join('');
+    document.getElementById('doctorRoutes').innerHTML=routes.map((r,i)=>`<${r[3]?'a':'div'} class="doctor-route route-art-${i+1} ${r[3]?'':'unready'}" ${r[3]?`href="${r[3]}"`:'aria-disabled="true"'}><div class="doctor-card-art"><b class="doctor-route-number">${i+1}</b>${DOCTOR_ART[i]}</div><strong>${esc(r[0])}</strong><span>${r[1]} · ${r[2]} ступеней${i===4?' · Два итоговых формата':''}</span><p>${descriptions[i]}</p>${r[3]?`<span class="doctor-route-bar"><i style="width:${Math.round(passed[i]/r[2]*100)}%"></i></span><span>${passed[i]}/${r[2]} ступеней пройдено · 已完成</span>`:''}<span class="doctor-route-action">${r[3]?(passed[i]?'Продолжить':'Начать')+' → · 开始 / 继续':'В подготовке · 准备中'}</span></${r[3]?'a':'div'}>`).join('');
     const formats=[...routes.slice(0,4).map((r,i)=>[r[0],bestFinal[i],lastFinal[i]]),['Текст: выбор ответов',null,null],['Текст: короткие ответы',null,null]];
     const ready=formats.filter(f=>f[1]?.total>0&&f[1].score/f[1].total>=.7).length;
     document.getElementById('doctorReadinessBody').innerHTML=`<p class="doctor-map-name">${esc(name)}</p><p>${esc(date)} · ${ready}/6 итоговых форматов пройдено · 已通过</p><table><caption>Лестницы · 学习路线</caption><thead><tr><th>Маршрут</th><th>Ступени</th><th>Готовность</th><th>Лучший итог</th></tr></thead><tbody>${routes.map((r,i)=>`<tr><td>${esc(r[0])}</td><td>${passed[i]}/${r[2]}</td><td>${Math.round(passed[i]/r[2]*100)}%</td><td>${score(bestFinal[i])}</td></tr>`).join('')}</tbody></table><table><caption>Итоговые форматы · 综合训练</caption><thead><tr><th>Формат</th><th>Лучший</th><th>Последний</th></tr></thead><tbody>${formats.map(f=>`<tr><td>${esc(f[0])}</td><td>${score(f[1])}</td><td>${score(f[2])}</td></tr>`).join('')}</tbody></table><p>Сделайте скриншот и отправьте преподавателю. · 请截图并发送给老师。</p>`;
