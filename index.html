@@ -40,7 +40,14 @@
 <section class="doctor-nav" aria-labelledby="doctorNavTitle">
   <h2 id="doctorNavTitle">У врача · Пять учебных маршрутов<span>看病：五条学习路线</span></h2>
   <p>Выберите лестницу. Ступени внутри неё открываются при результате от 70%.<span>请选择学习路线，达到70%后开放下一级。</span></p>
-  <div id="doctorRoutes" class="doctor-routes"></div>
+  <div id="doctorRoutes" class="doctor-routes">
+    <a class="doctor-route" href="#ladder"><strong>1. Слово и объяснение</strong><span>词语与解释 · 10 ступеней</span><span>Начать / Продолжить → · 开始 / 继续</span></a>
+    <a class="doctor-route" href="lestnica2.html"><strong>2. Слышу то, что написано</strong><span>听音辨字 · 8 ступеней</span><span>Начать / Продолжить → · 开始 / 继续</span></a>
+    <div class="doctor-route unready" aria-disabled="true"><strong>3. Диалог с пропусками</strong><span>补全对话 · 8 ступеней · Ещё не добавлено · 暂未开放</span></div>
+    <div class="doctor-route unready" aria-disabled="true"><strong>4. Перефразируй</strong><span>选择同义句 · 8 ступеней · Ещё не добавлено · 暂未开放</span></div>
+    <div class="doctor-route unready" aria-disabled="true"><strong>5. Слушаю и понимаю текст</strong><span>听懂课文 · 8 ступеней · Два итоговых формата · Ещё не добавлено · 暂未开放</span></div>
+  </div>
+  <p id="doctorLoading">Загружаются записи первой лестницы. Вторая уже доступна по ссылке выше.<span>正在加载第一条路线的录音，可先打开上方第二条路线。</span></p>
   <details id="doctorReadiness"><summary>Карта готовности к экзамену · 考试准备情况</summary><div id="doctorReadinessBody"></div><button type="button" id="doctorCopy">Копировать сводку · 复制摘要</button><p id="doctorCopyStatus" role="status"></p></details>
 </section>
 
@@ -112,6 +119,7 @@
   const read=n=>{try{return JSON.parse(localStorage.getItem(`doctor-route${n}-student-v1`)||'{}')}catch{return {}}};
   const score=r=>r?`${r.score}/${r.total} · ${Math.round(r.score/r.total*100)}%`:'Не начато · 未开始';
   function render(){
+    document.getElementById('doctorLoading').hidden=true;
     const data=routes.map((_,i)=>read(i+1));
     const passed=routes.map((r,i)=>Object.values(data[i].results||{}).filter(v=>{const b=v.best||v;return b.total>0&&b.score/b.total>=.7}).length);
     const bestFinal=routes.map((r,i)=>{const v=data[i].results?.[r[2]];return v?.best||v});
