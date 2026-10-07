@@ -106,6 +106,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
   const C = R3Core, D = R3_DATA, KEY = D.interface.storage_key;
   const $ = selector => document.querySelector(selector);
   const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const wordLabel = value => { const text=String(value ?? ''); return /^[А-Яа-яЁё\u0301]+[.,!?…]?$/u.test(text.trim()) ? text.toLocaleLowerCase('ru') : text; };
   const bilingual = (ru, zh) => `${esc(ru)}<span class="zh">${esc(zh)}</span>`;
   const read = key => { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; } };
   const saved = read(KEY);
@@ -286,7 +287,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
     $('#workspace').innerHTML=head('Демонстрация · 示范')+`<p>${bilingual(step.demo.instruction_ru,step.demo.instruction_zh)}</p>
       <div class="demo-stage">${promptMarkup(d)}${audioMarkup(d.audio.audio_id,'demo',true)}
       <div id="demoRhythm"></div>
-      ${d.options.length?`<div class="options" id="demoOptions">${(d.response_mode==='ordering'?[...d.options].reverse():d.options).map(o=>`<button disabled data-value="${esc(o)}">${esc(o)}</button>`).join('')}</div>`:''}
+      ${d.options.length?`<div class="options" id="demoOptions">${(d.response_mode==='ordering'?[...d.options].reverse():d.options).map(o=>`<button disabled data-value="${esc(o)}">${esc(wordLabel(o))}</button>`).join('')}</div>`:''}
       ${d.response_mode==='ordering'?'<div id="demoOrder" class="anchor"></div>':''}
       ${d.response_mode==='free_text'?writingMarkup('','demoInput')+'<button id="demoCheck" disabled>'+ (state.step===8?'Завершить · 完成':'Проверить · 检查')+'</button>':''}
       <p id="demoAction" role="status">Сначала прослушайте пример. · 请先听示范。</p><div id="demoFeedback" role="status"></div></div>
@@ -311,13 +312,13 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
         later(()=>{btn.classList.remove('pointed');btn.classList.add('selected');state.order.push(part);$('#demoOrder').textContent=state.order.join(' ');},delay,token);delay+=350;
       });
     }else{
-      const letters=[...d.correct_answer];
+      const letters=[...wordLabel(d.correct_answer)];
       letters.forEach(letter=>{later(()=>{$('#demoInput').value+=letter;$('#demoInput').classList.add('typing');document.querySelectorAll('.key').forEach(b=>b.classList.toggle('pressed',b.dataset.key===letter.toLowerCase()));},delay,token);delay+=160;});
       later(()=>{$('#demoCheck').classList.add('pointed');},delay,token);delay+=900;
       later(()=>{$('#demoCheck').classList.remove('pointed');$('#demoCheck').classList.add('selected');},delay,token);
     }
     later(()=>{
-      $('#demoFeedback').className='feedback good';$('#demoFeedback').innerHTML=`<strong>Верно · 正确${state.step===8?' · 1/1':''}</strong><p>${esc(d.feedback.answer_display)}</p><p>${esc(d.feedback.explanation_ru)}</p><p>${esc(d.feedback.translation_zh)}</p>`;
+      $('#demoFeedback').className='feedback good';$('#demoFeedback').innerHTML=`<strong>Верно · 正确${state.step===8?' · 1/1':''}</strong><p>${esc(wordLabel(d.feedback.answer_display))}</p><p>${esc(d.feedback.explanation_ru)}</p><p>${esc(d.feedback.translation_zh)}</p>`;
       $('.typing')?.classList.remove('typing');document.querySelectorAll('.pressed').forEach(b=>b.classList.remove('pressed'));
       $('#demoAction').textContent='Пример завершён · 示范完成';state.demoComplete=true;state.demoAnimating=false;$('#nowYou').disabled=false;refreshAudio();
     },delay+600,token);
@@ -360,14 +361,14 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       $('#answerInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}};
     }else if(task.response_mode==='ordering'){
       state.order=[];
-      $('#questionAction').innerHTML=`<div class="anchor" id="assembled" aria-live="polite">…</div><div class="options">${task.options.map((o,i)=>({o,i})).reverse().map(({o,i})=>`<button data-block="${i}">${esc(o)}</button>`).join('')}</div><div class="actions"><button id="undoBlock">Убрать последний блок · 撤回最后一块</button><button id="clearBlocks">Сначала · 重新排列</button><button id="checkOrder" class="primary" disabled>Проверить · 检查</button></div>`;
+      $('#questionAction').innerHTML=`<div class="anchor" id="assembled" aria-live="polite">…</div><div class="options">${task.options.map((o,i)=>({o,i})).reverse().map(({o,i})=>`<button data-block="${i}">${esc(wordLabel(o))}</button>`).join('')}</div><div class="actions"><button id="undoBlock">Убрать последний блок · 撤回最后一块</button><button id="clearBlocks">Сначала · 重新排列</button><button id="checkOrder" class="primary" disabled>Проверить · 检查</button></div>`;
       const update=()=>{$('#assembled').textContent=state.order.map(i=>task.options[i]).join(' ')||'…';document.querySelectorAll('[data-block]').forEach(b=>b.disabled=state.order.includes(+b.dataset.block));$('#checkOrder').disabled=state.order.length!==task.options.length;};
       document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>{state.order.push(+b.dataset.block);update();});
       $('#undoBlock').onclick=()=>{state.order.pop();update();};$('#clearBlocks').onclick=()=>{state.order=[];update();};
       $('#checkOrder').onclick=()=>answerQuestion(state.order.map(i=>task.options[i]).join(' '));
     }else{
       const options=C.shuffled(task.options,state.run.seed+state.index);
-      $('#questionAction').innerHTML=`<div class="options">${options.map(o=>`<button data-choice="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
+      $('#questionAction').innerHTML=`<div class="options">${options.map(o=>`<button data-choice="${esc(o)}">${esc(wordLabel(o))}</button>`).join('')}</div>`;
       document.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>answerQuestion(b.dataset.choice));
     }
   }
@@ -381,8 +382,8 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       diff=`<p>${esc(d.type)}: <del>${esc(d.wrong||'∅')}</del> → <mark>${esc(d.right||'∅')}</mark></p>
         <p>${esc(d.before)}<mark>${esc(d.right)}</mark>${esc(d.after)}</p>`;
     }
-    return `<strong>${points?'Верно · 对了':'Нужно исправить · 需要改正'}</strong><div class="answer-reveal">${esc(f.answer_display.replaceAll(' / ',' '))}</div>
-      <p>Прозвучало · 录音：${esc(task.audio.audio_text)}</p>${diff}<p>${esc(f.explanation_ru)}</p>
+    return `<strong>${points?'Верно · 对了':'Нужно исправить · 需要改正'}</strong><div class="answer-reveal">${esc(wordLabel(f.answer_display.replaceAll(' / ',' ')))}</div>
+      <p>Прозвучало · 录音：${esc(wordLabel(task.audio.audio_text))}</p>${diff}<p>${esc(f.explanation_ru)}</p>
       <p>${esc(f.key_feature_ru)}</p><p>${esc(f.contrast_ru)}</p><p class="zh-feedback">${esc(f.translation_zh)}</p>`;
   }
   function answerQuestion(value) {
@@ -413,7 +414,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
   }
   function renderExam() {
     clearActivity();const step=D.steps[7],a=state.run.examAnswers||{};state.activeExamInput=null;
-    $('#workspace').innerHTML=head('<span id="examCounter"></span>')+`<div class="dots" id="examDots"></div><p class="instruction">${bilingual(step.instruction_ru,step.instruction_zh)}</p><p>20 пропусков · 满分20分 · Порог 14/20 · 14分通过</p><aside class="word-bank"><strong>Слова · 词汇表</strong><p>${C.shuffled(D.lexemes,state.run.seed).map(x=>esc(x)).join(' · ')}</p></aside>
+    $('#workspace').innerHTML=head('<span id="examCounter"></span>')+`<div class="dots" id="examDots"></div><p class="instruction">${bilingual(step.instruction_ru,step.instruction_zh)}</p><p>20 пропусков · 满分20分 · Порог 14/20 · 14分通过</p><aside class="word-bank"><strong>Слова · 词汇表</strong><p>${C.shuffled(D.lexemes,state.run.seed).map(x=>esc(wordLabel(x))).join(' · ')}</p></aside>
       <div id="examItems">${D.examDialogues.map((d,i)=>`<section class="dialogue"><h3>${i+1}. ${esc(D.dialogues[i].title_ru)}</h3>${audioMarkup(d.audio_id,d.audio_id)}<div class="exam-dialogue">${d.text.split('\n').map(line=>'<p>'+esc(line).replace(/\[(\d{2}) ____\]/g,(_,num)=>`<label class="gap"><span>${num}</span><input class="exam-input" aria-label="Пропуск ${num} · 空缺${num}" id="gap-${num}" data-slot="${num}" lang="ru" value="${esc(a['R3-S8-'+num]||'')}" maxlength="40"></label>` )+'</p>').join('')}</div></section>`).join('')}</div>
       <div id="examKeyboard" class="writing">${keyboardMarkup()}<p class="writing-note">Нажмите пропуск, затем печатайте. · 点击空缺后输入。</p></div><p id="examWarning" role="status"></p><button class="primary" id="submitExam">Завершить · 完成</button>`;
     bindBack();document.querySelectorAll('.audio-panel').forEach(p=>bindAudio(p));
