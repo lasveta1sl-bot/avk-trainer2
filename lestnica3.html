@@ -106,6 +106,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
   const C = R3Core, D = R3_DATA, KEY = D.interface.storage_key;
   const $ = selector => document.querySelector(selector);
   const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const soundBlockLabel = value => String(value ?? '').toLocaleLowerCase('ru').replace(/[\p{P}\p{S}]/gu, '').replace(/\s+/gu, ' ').trim();
   const wordLabel = value => { const text=String(value ?? ''); return /^[А-Яа-яЁё\u0301]+[.,!?…]?$/u.test(text.trim()) ? text.toLocaleLowerCase('ru') : text; };
   const bilingual = (ru, zh) => `${esc(ru)}<span class="zh">${esc(zh)}</span>`;
   const read = key => { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; } };
@@ -287,7 +288,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
     $('#workspace').innerHTML=head('Демонстрация · 示范')+`<p>${bilingual(step.demo.instruction_ru,step.demo.instruction_zh)}</p>
       <div class="demo-stage">${promptMarkup(d)}${audioMarkup(d.audio.audio_id,'demo',true)}
       <div id="demoRhythm"></div>
-      ${d.options.length?`<div class="options" id="demoOptions">${(d.response_mode==='ordering'?[...d.options].reverse():d.options).map(o=>`<button disabled data-value="${esc(o)}">${esc(wordLabel(o))}</button>`).join('')}</div>`:''}
+      ${d.options.length?`<div class="options" id="demoOptions">${(d.response_mode==='ordering'?[...d.options].reverse():d.options).map(o=>`<button disabled data-value="${esc(o)}">${esc(d.response_mode==='ordering'?soundBlockLabel(o):wordLabel(o))}</button>`).join('')}</div>`:''}
       ${d.response_mode==='ordering'?'<div id="demoOrder" class="anchor"></div>':''}
       ${d.response_mode==='free_text'?writingMarkup('','demoInput')+'<button id="demoCheck" disabled>'+ (state.step===8?'Завершить · 完成':'Проверить · 检查')+'</button>':''}
       <p id="demoAction" role="status">Сначала прослушайте пример. · 请先听示范。</p><div id="demoFeedback" role="status"></div></div>
@@ -309,7 +310,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       sequence.forEach(part=>{
         const btn=[...document.querySelectorAll('#demoOptions button')].find(b=>b.dataset.value===part);
         later(()=>btn.classList.add('pointed'),delay,token);delay+=800;
-        later(()=>{btn.classList.remove('pointed');btn.classList.add('selected');state.order.push(part);$('#demoOrder').textContent=state.order.join(' ');},delay,token);delay+=350;
+        later(()=>{btn.classList.remove('pointed');btn.classList.add('selected');state.order.push(part);$('#demoOrder').textContent=state.order.map(soundBlockLabel).join(' ');},delay,token);delay+=350;
       });
     }else{
       const letters=[...wordLabel(d.correct_answer)];
@@ -318,7 +319,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       later(()=>{$('#demoCheck').classList.remove('pointed');$('#demoCheck').classList.add('selected');},delay,token);
     }
     later(()=>{
-      $('#demoFeedback').className='feedback good';$('#demoFeedback').innerHTML=`<strong>Верно · 正确${state.step===8?' · 1/1':''}</strong><p>${esc(wordLabel(d.feedback.answer_display))}</p><p>${esc(d.feedback.explanation_ru)}</p><p>${esc(d.feedback.translation_zh)}</p>`;
+      $('#demoFeedback').className='feedback good';$('#demoFeedback').innerHTML=`<strong>Верно · 正确${state.step===8?' · 1/1':''}</strong><p>${esc(d.response_mode==='ordering'?soundBlockLabel(d.feedback.answer_display):wordLabel(d.feedback.answer_display))}</p><p>${esc(d.feedback.explanation_ru)}</p><p>${esc(d.feedback.translation_zh)}</p>`;
       $('.typing')?.classList.remove('typing');document.querySelectorAll('.pressed').forEach(b=>b.classList.remove('pressed'));
       $('#demoAction').textContent='Пример завершён · 示范完成';state.demoComplete=true;state.demoAnimating=false;$('#nowYou').disabled=false;refreshAudio();
     },delay+600,token);
@@ -361,8 +362,8 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       $('#answerInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}};
     }else if(task.response_mode==='ordering'){
       state.order=[];
-      $('#questionAction').innerHTML=`<div class="anchor" id="assembled" aria-live="polite">…</div><div class="options">${task.options.map((o,i)=>({o,i})).reverse().map(({o,i})=>`<button data-block="${i}">${esc(wordLabel(o))}</button>`).join('')}</div><div class="actions"><button id="undoBlock">Убрать последний блок · 撤回最后一块</button><button id="clearBlocks">Сначала · 重新排列</button><button id="checkOrder" class="primary" disabled>Проверить · 检查</button></div>`;
-      const update=()=>{$('#assembled').textContent=state.order.map(i=>task.options[i]).join(' ')||'…';document.querySelectorAll('[data-block]').forEach(b=>b.disabled=state.order.includes(+b.dataset.block));$('#checkOrder').disabled=state.order.length!==task.options.length;};
+      $('#questionAction').innerHTML=`<div class="anchor" id="assembled" aria-live="polite">…</div><div class="options">${task.options.map((o,i)=>({o,i})).reverse().map(({o,i})=>`<button data-block="${i}">${esc(soundBlockLabel(o))}</button>`).join('')}</div><div class="actions"><button id="undoBlock">Убрать последний блок · 撤回最后一块</button><button id="clearBlocks">Сначала · 重新排列</button><button id="checkOrder" class="primary" disabled>Проверить · 检查</button></div>`;
+      const update=()=>{$('#assembled').textContent=state.order.map(i=>soundBlockLabel(task.options[i])).join(' ')||'…';document.querySelectorAll('[data-block]').forEach(b=>b.disabled=state.order.includes(+b.dataset.block));$('#checkOrder').disabled=state.order.length!==task.options.length;};
       document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>{state.order.push(+b.dataset.block);update();});
       $('#undoBlock').onclick=()=>{state.order.pop();update();};$('#clearBlocks').onclick=()=>{state.order=[];update();};
       $('#checkOrder').onclick=()=>answerQuestion(state.order.map(i=>task.options[i]).join(' '));
@@ -382,7 +383,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
       diff=`<p>${esc(d.type)}: <del>${esc(d.wrong||'∅')}</del> → <mark>${esc(d.right||'∅')}</mark></p>
         <p>${esc(d.before)}<mark>${esc(d.right)}</mark>${esc(d.after)}</p>`;
     }
-    return `<strong>${points?'Верно · 对了':'Нужно исправить · 需要改正'}</strong><div class="answer-reveal">${esc(wordLabel(f.answer_display.replaceAll(' / ',' ')))}</div>
+    return `<strong>${points?'Верно · 对了':'Нужно исправить · 需要改正'}</strong><div class="answer-reveal">${esc(task.response_mode==='ordering'?soundBlockLabel(f.answer_display.replaceAll(' / ',' ')):wordLabel(f.answer_display.replaceAll(' / ',' ')))}</div>
       <p>Прозвучало · 录音：${esc(wordLabel(task.audio.audio_text))}</p>${diff}<p>${esc(f.explanation_ru)}</p>
       <p>${esc(f.key_feature_ru)}</p><p>${esc(f.contrast_ru)}</p><p class="zh-feedback">${esc(f.translation_zh)}</p>`;
   }
@@ -392,7 +393,7 @@ window.R3Init=function(R3_DATA){/* Approved R3 bank is injected as R3_DATA only 
     const task=state.tasks[state.index],points=task.response_mode==='single_choice'?
       +(value===task.correct_answer):+C.accepted(task,value);
     state.answers.push({id:task.id,value,points});
-    if(task.response_mode==='ordering'){document.querySelectorAll('#questionAction button').forEach(b=>b.disabled=true);if(!points){const actual=state.order.map(i=>task.options[i]),expected=task.options,at=expected.findIndex((p,i)=>p!==actual[i]);$('#assembled').innerHTML=expected.map((p,i)=>i===at?'<mark>'+esc(p)+'</mark>':esc(p)).join(' ');}}
+    if(task.response_mode==='ordering'){document.querySelectorAll('#questionAction button').forEach(b=>b.disabled=true);if(!points){const actual=state.order.map(i=>task.options[i]),expected=task.options,at=expected.findIndex((p,i)=>p!==actual[i]);$('#assembled').innerHTML=expected.map((p,i)=>i===at?'<mark>'+esc(soundBlockLabel(p))+'</mark>':esc(soundBlockLabel(p))).join(' ');}}
     document.querySelectorAll('[data-choice]').forEach(b=>{b.disabled=true;b.classList.toggle('correct',b.dataset.choice===task.correct_answer);b.classList.toggle('incorrect',!points&&b.dataset.choice===value);});
     if($('#answerInput')){$('#answerInput').disabled=true;$('#check').disabled=true;document.querySelectorAll('[data-key]').forEach(b=>b.disabled=true);}
     $('#feedback').className=`feedback ${points?'good':'bad'}`;$('#feedback').innerHTML=feedbackMarkup(task,value,points);
