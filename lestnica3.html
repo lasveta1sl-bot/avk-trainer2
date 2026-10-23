@@ -35,7 +35,8 @@ h2{font-size:26px;margin:0 0 15px}h3{font-size:22px}.zh{display:block;font-weigh
       let zh=dictionary[ru];
       if(!zh)continue;
       const next=node.nextSibling;
-      if(next?.nodeType===1&&(next.matches('.zh,[data-manual-zh]'))){
+      if(next?.nodeType===1&&(next.matches('.zh,[data-manual-zh]')||
+          (chinese.test(next.textContent)&&!/[А-Яа-яЁё]/u.test(next.textContent)))){
         if(next.textContent!==zh)next.textContent=zh;
         next.dataset.manualZh='1';
       }else{
